@@ -22,11 +22,11 @@ CHRONOS_HOST = "localhost"
 CHRONOS_PORT = 4400
 CHRONOS_URL = ""
 VERBOSE_LOGGING = False
-
+CLEAN_METRICS = True
 
 def configure_callback(conf):
     """Received configuration information"""
-    global CHRONOS_HOST, CHRONOS_PORT, CHRONOS_URL, VERBOSE_LOGGING
+    global CHRONOS_HOST, CHRONOS_PORT, CHRONOS_URL, VERBOSE_LOGGING, CLEAN_METRICS
     for node in conf.children:
         if node.key == 'Host':
             CHRONOS_HOST = node.values[0]
@@ -34,6 +34,8 @@ def configure_callback(conf):
             CHRONOS_PORT = int(node.values[0])
         elif node.key == 'Verbose':
             VERBOSE_LOGGING = bool(node.values[0])
+        elif node.key == 'CleanMetrics':
+            CLEAN_METRICS = bool(node.values[0])
         else:
             collectd.warning('chronos plugin: Unknown config key: %s.' % node.key)
 
@@ -65,6 +67,10 @@ def dispatch_stat(type, name, value):
     log_verbose('Sending value[%s]: %s=%s' % (type, name, value))
 
     val = collectd.Values(plugin='chronos')
+    if CLEAN_METRICS:
+        name_parts = name.split('.')
+        name_parts.reverse()
+        ".".join(name_parts)
     val.type = type
     val.type_instance = name
     val.values = [value]
