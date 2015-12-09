@@ -70,7 +70,7 @@ def dispatch_stat(type, name, value):
     if CLEAN_METRICS:
         name_parts = name.split('.')
         name_parts.reverse()
-        ".".join(name_parts)
+        name = ".".join(name_parts)
     val.type = type
     val.type_instance = name
     val.values = [value]
